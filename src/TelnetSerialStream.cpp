@@ -101,7 +101,7 @@ void TelnetSerialStream::loop() {
           _serverClients[i] = NULL;
         };
 
-        _serverClients[i] = new WiFiClient(_server->available());
+        _serverClients[i] = new WiFiClient(_server->accept());
 
         _serverClients[i]->print("Telnet connection");
         if (_identifier && _identifier[0]) {
@@ -133,7 +133,7 @@ void TelnetSerialStream::loop() {
     if (i >= _maxClients) {
       //no free/disconnected spot so reject
       Log.println("Too many log/telnet clients. rejecting.");
-      _server->available().stop();
+      _server->accept().stop();
     }
   }
 
@@ -152,10 +152,10 @@ void TelnetSerialStream::loop() {
       continue;
     }
 
-    if (!_serverClients[i]->available())
+    if (!_serverClients[i]->accept())
       continue;
 
-    while (_serverClients[i]->available()) {
+    while (_serverClients[i]->accept()) {
       unsigned char c = _serverClients[i]->read();
       if (c > 0 && c < 32) {
         // Serial.println("Ignoring telnet input");
